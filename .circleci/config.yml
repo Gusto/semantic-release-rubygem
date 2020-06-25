@@ -5,7 +5,8 @@ orbs:
 
 jobs:
   test:
-    executor: gusto/node
+    docker:
+      - image: circleci/ruby:2.7-node
     steps:
       - gusto/yarn-install
       - run: yarn lint
