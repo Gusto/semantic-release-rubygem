@@ -1,5 +1,5 @@
 const path = require('path');
-const { promisify } = require('util');
+const { promisify, format } = require('util');
 const rimrafOrig = require('rimraf');
 const ncpModule = require('ncp');
 const { readFile, writeFile, access } = require('fs').promises;
@@ -10,13 +10,13 @@ const rimraf = promisify(rimrafOrig);
 const ncp = promisify(ncpModule.ncp);
 
 const cwd = path.resolve(__dirname, './fixtures/temp');
-const versionFile = path.resolve(cwd, './lib/test-gem/version.rb');
-const gemspec = path.resolve(cwd, './test-gem.gemspec');
+const versionFile = 'lib/test-gem/version.rb';
+const gemspec = 'test-gem.gemspec';
 const gemName = 'a-test-gem';
 const context = {
   nextRelease: { version: '1.2.0' },
   cwd,
-  logger: { log() {} },
+  logger: { log: () => {} },
 };
 
 const cleanUp = () => rimraf(cwd);

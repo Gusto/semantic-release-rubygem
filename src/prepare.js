@@ -14,33 +14,39 @@ const writeVersion = async ({ versionFile, nextVersion, logger, cwd }) => {
   await writeFile(fullVersionPath, newContents, 'utf8');
 };
 
-const bundleInstall = async ({ updateGemfileLock, cwd, env }) => {
-  if (typeof updateGemfileLock === 'string') {
-    await execa.command(updateGemfileLock, { cwd, env });
-  } else {
-    await execa('bundle', ['install'], { cwd, env });
-  }
+const bundleInstall = async ({ updateGemfileLock, cwd, env, logger, stdout, stderr }) => {
+  const command = typeof updateGemfileLock === 'string' ? updateGemfileLock : 'bundle install';
+  logger.log('Updating lock file with command `%s`', command);
+  const installResult = execa.command(command, { cwd, env });
+  installResult.stdout.pipe(stdout, { end: false });
+  installResult.stderr.pipe(stderr, { end: false });
+
+  await installResult;
 };
 
-const buildGem = async ({ gemspec, gemName, version, cwd, env }) => {
+const buildGem = async ({ gemspec, gemName, version, cwd, env, logger, stdout, stderr }) => {
   const gemFile = `${gemName}-${version}.gem`;
-  await execa('gem', ['build', gemspec, '-o', gemFile], { cwd, env });
+  logger.log('Building gem `%s`', gemFile);
+  const buildResult = execa('gem', ['build', gemspec, '-o', gemFile], { cwd, env });
+  buildResult.stdout.pipe(stdout, { end: false });
+  buildResult.stderr.pipe(stderr, { end: false });
+  await buildResult;
 
   return gemFile;
 };
 
 module.exports = async function prepare(
   pluginConfig,
-  { nextRelease: { version }, cwd, env, logger },
+  { nextRelease: { version }, cwd, env, logger, stdout, stderr },
 ) {
   const { versionFile, gemspec, gemName, updateGemfileLock = false } = pluginConfig;
   await writeVersion({ versionFile, nextVersion: version, logger, cwd });
 
   if (updateGemfileLock) {
-    await bundleInstall({ updateGemfileLock, cwd, env });
+    await bundleInstall({ updateGemfileLock, cwd, env, logger, stdout, stderr });
   }
 
-  const gemFile = await buildGem({ gemspec, gemName, version, cwd, env });
+  const gemFile = await buildGem({ gemspec, gemName, version, cwd, env, logger, stdout, stderr });
   // eslint-disable-next-line no-param-reassign
   pluginConfig.gemFile = gemFile;
 };
