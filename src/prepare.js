@@ -27,7 +27,7 @@ const bundleInstall = async ({ updateGemfileLock, cwd, env, logger, stdout, stde
 const buildGem = async ({ gemspec, gemName, version, cwd, env, logger, stdout, stderr }) => {
   const gemFile = `${gemName}-${version}.gem`;
   logger.log('Building gem `%s`', gemFile);
-  const buildResult = execa('gem', ['build', gemspec, '-o', gemFile], { cwd, env });
+  const buildResult = execa('gem', ['build', gemspec], { cwd, env });
   buildResult.stdout.pipe(stdout, { end: false });
   buildResult.stderr.pipe(stderr, { end: false });
   await buildResult;
