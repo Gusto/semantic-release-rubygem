@@ -1,7 +1,6 @@
 // const verifyConditions = require('./src/verify');
 const util = require('util');
 const execa = require('execa');
-const path = require('path');
 const SemanticReleaseError = require('@semantic-release/error');
 
 const glob = util.promisify(require('glob'));
@@ -20,7 +19,7 @@ const loadGemspec = async cwd => {
     );
   }
 
-  const gemspec = path.resolve(cwd, gemspecs[0]);
+  const [gemspec] = gemspecs;
   let gemName = null;
   try {
     // TODO: Use cwd here instead of the full path?
@@ -69,7 +68,7 @@ const findVersionFile = async cwd => {
     );
   }
 
-  return path.resolve(cwd, versionFiles[0]);
+  return versionFiles[0];
 };
 
 const verifyApiKey = env => {

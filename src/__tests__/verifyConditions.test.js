@@ -9,7 +9,7 @@ it('finds and loads the gemspec', async () => {
   const cwd = path.resolve(__dirname, './fixtures/valid');
   await verifyConditions(pluginConfig, { cwd, env: defaultEnv });
   expect(pluginConfig.gemName).toEqual('a-test-gem');
-  expect(pluginConfig.gemspec).toMatch(/fixtures\/valid\/test-gem.gemspec$/);
+  expect(pluginConfig.gemspec).toEqual('test-gem.gemspec');
 });
 
 describe('when there is no gemfile', () => {
@@ -24,7 +24,7 @@ describe('when the gemspec is invalid', () => {
   it('throws an error', async () => {
     const cwd = path.resolve(__dirname, './fixtures/invalid-gemspec');
     await expect(verifyConditions({}, { cwd, env: defaultEnv })).rejects.toThrow(
-      /Error loading .+\/fixtures\/invalid-gemspec\/test-gem.gemspec/,
+      'Error loading `test-gem.gemspec`',
     );
   });
 });
@@ -33,7 +33,7 @@ describe('when the gemspec has no name defined', () => {
   it('throws an error', async () => {
     const cwd = path.resolve(__dirname, './fixtures/no-gem-name');
     await expect(verifyConditions({}, { cwd, env: defaultEnv })).rejects.toThrow(
-      /Missing `name` attribute in .+\/fixtures\/no-gem-name\/test-gem.gemspec/,
+      'Missing `name` attribute in `test-gem.gemspec`',
     );
   });
 });
@@ -42,7 +42,7 @@ it('finds the version file', async () => {
   const pluginConfig = {};
   const cwd = path.resolve(__dirname, './fixtures/valid');
   await verifyConditions(pluginConfig, { cwd, env: defaultEnv });
-  expect(pluginConfig.versionFile).toMatch(/fixtures\/valid\/lib\/test-gem\/version.rb$/);
+  expect(pluginConfig.versionFile).toEqual('lib/test-gem/version.rb');
 });
 
 describe('when there is no version file', () => {

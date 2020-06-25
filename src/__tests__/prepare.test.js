@@ -32,7 +32,7 @@ afterEach(async () => {
 
 it('writes the new version to the version.rb file', async () => {
   await prepare({ versionFile, gemspec, gemName }, context);
-  const versionContents = await readFile(versionFile, 'utf8');
+  const versionContents = await readFile(path.resolve(cwd, versionFile), 'utf8');
   expect(versionContents).toEqual(`# frozen_string_literal: true
 
 module TestGem
