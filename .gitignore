@@ -7,3 +7,6 @@ node_modules/
 
 # Temporary test fixtures
 src/__tests__/fixtures/temp
+
+# VSCode settings
+.vscode/settings.json
