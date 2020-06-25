@@ -1,5 +1,5 @@
 const path = require('path');
-const { promisify, format } = require('util');
+const { promisify } = require('util');
 const rimrafOrig = require('rimraf');
 const ncpModule = require('ncp');
 const { readFile, writeFile, access } = require('fs').promises;

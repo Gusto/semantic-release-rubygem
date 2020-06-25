@@ -2,8 +2,9 @@ const { unlink } = require('fs').promises;
 const execa = require('execa');
 
 module.exports = async function publish(
-  { gemFile, gemName, gemHost },
+  { gemHost },
   { cwd, env, logger, nextRelease: { version }, stdout, stderr },
+  { gemFile, gemName },
 ) {
   logger.log(`Publishing version ${version} to gem server`);
   const args = ['push', gemFile];

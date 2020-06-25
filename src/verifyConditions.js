@@ -14,7 +14,7 @@ const loadGemspec = async cwd => {
       'ENOGEMSPEC',
       `A single [.gemspec](https://guides.rubygems.org/specification-reference/) file in the root of your project is required to release a Ruby gem.
 
-      Please follow the [Make your own gem guide](https://guides.rubygems.org/make-your-own-gem/) to create a valid \`.gemspec\` file
+Please follow the "[Make your own gem guide](https://guides.rubygems.org/make-your-own-gem/)" to create a valid \`.gemspec\` file
       `,
     );
   }
@@ -35,7 +35,7 @@ const loadGemspec = async cwd => {
       'EINVALIDGEMSPEC',
       `A valid [.gemspec](https://guides.rubygems.org/specification-reference/) is required to release a Ruby gem.
 
-      Please follow the [Make your own gem guide](https://guides.rubygems.org/make-your-own-gem/) to create a valid \`.gemspec\` file
+Please follow the "[Make your own gem guide](https://guides.rubygems.org/make-your-own-gem/)" to create a valid \`.gemspec\` file
       `,
     );
   }
@@ -46,7 +46,7 @@ const loadGemspec = async cwd => {
       'ENOGEMNAME',
       `The [name](https://guides.rubygems.org/specification-reference/#name) attribute is required in your \`.gemspec\` file in order to publish a Ruby gem.
 
-      Please make sure to add a valid \`name\` for your gem in your \`.gemspec\`.
+Please make sure to add a valid \`name\` for your gem in your \`.gemspec\`.
       `,
     );
   }
@@ -63,7 +63,7 @@ const findVersionFile = async cwd => {
       'ENOVERSIONFILE',
       `A \`version.rb\` file in the \`lib/*\` dir of your project is required to release a Ruby gem.
 
-      Please create a \`version.rb\` file with a defined \`VERSION\` constant in your \`lib\` dir (or subdir).
+Please create a \`version.rb\` file with a defined \`VERSION\` constant in your \`lib\` dir (or subdir).
       `,
     );
   }
@@ -78,7 +78,7 @@ const verifyApiKey = env => {
       'ENOGEMAPIKEY',
       `A gem host API key must be created and set in the \`GEM_HOST_API_KEY\` environment variable on you CI environment.
 
-      You can retrieve an API key either from your \`.gem/credentials\` file or in your profile in [RubyGems.org](http://rubygems.org/).
+You can retrieve an API key either from your \`.gem/credentials\` file or in your profile in [RubyGems.org](http://rubygems.org/).
       `,
     );
   }
@@ -94,16 +94,12 @@ module.exports = async function verify(pluginConfig, { env, cwd }) {
 
   // - Locate gemspec and determine name
   const { name, gemspec } = await loadGemspec(cwd);
-  // eslint-disable-next-line no-param-reassign
-  pluginConfig.gemName = name;
-  // eslint-disable-next-line no-param-reassign
-  pluginConfig.gemspec = gemspec;
 
   // - Locate version file
   const versionFile = await findVersionFile(cwd);
-  // eslint-disable-next-line no-param-reassign
-  pluginConfig.versionFile = versionFile;
 
   // - Verify env var
   verifyApiKey(env);
+
+  return { gemName: name, gemspec, versionFile };
 };

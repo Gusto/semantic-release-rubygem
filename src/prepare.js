@@ -36,10 +36,10 @@ const buildGem = async ({ gemspec, gemName, version, cwd, env, logger, stdout, s
 };
 
 module.exports = async function prepare(
-  pluginConfig,
+  { updateGemfileLock = false },
   { nextRelease: { version }, cwd, env, logger, stdout, stderr },
+  { versionFile, gemspec, gemName },
 ) {
-  const { versionFile, gemspec, gemName, updateGemfileLock = false } = pluginConfig;
   await writeVersion({ versionFile, nextVersion: version, logger, cwd });
 
   if (updateGemfileLock) {
@@ -47,6 +47,6 @@ module.exports = async function prepare(
   }
 
   const gemFile = await buildGem({ gemspec, gemName, version, cwd, env, logger, stdout, stderr });
-  // eslint-disable-next-line no-param-reassign
-  pluginConfig.gemFile = gemFile;
+
+  return { gemFile };
 };
