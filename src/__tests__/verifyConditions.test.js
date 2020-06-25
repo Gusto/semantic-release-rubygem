@@ -5,11 +5,10 @@ const verifyConditions = require('../verifyConditions');
 const defaultEnv = { GEM_HOST_API_KEY: '123' };
 
 it('finds and loads the gemspec', async () => {
-  const pluginConfig = {};
   const cwd = path.resolve(__dirname, './fixtures/valid');
-  await verifyConditions(pluginConfig, { cwd, env: defaultEnv });
-  expect(pluginConfig.gemName).toEqual('a-test-gem');
-  expect(pluginConfig.gemspec).toEqual('test-gem.gemspec');
+  const { gemName, gemspec } = await verifyConditions({}, { cwd, env: defaultEnv });
+  expect(gemName).toEqual('a-test-gem');
+  expect(gemspec).toEqual('test-gem.gemspec');
 });
 
 describe('when there is no gemfile', () => {
@@ -39,10 +38,9 @@ describe('when the gemspec has no name defined', () => {
 });
 
 it('finds the version file', async () => {
-  const pluginConfig = {};
   const cwd = path.resolve(__dirname, './fixtures/valid');
-  await verifyConditions(pluginConfig, { cwd, env: defaultEnv });
-  expect(pluginConfig.versionFile).toEqual('lib/test-gem/version.rb');
+  const { versionFile } = await verifyConditions({}, { cwd, env: defaultEnv });
+  expect(versionFile).toEqual('lib/test-gem/version.rb');
 });
 
 describe('when there is no version file', () => {

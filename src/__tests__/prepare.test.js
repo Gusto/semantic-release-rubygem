@@ -4,6 +4,7 @@ const rimrafOrig = require('rimraf');
 const ncpModule = require('ncp');
 const { readFile, writeFile, access } = require('fs').promises;
 const execa = require('execa');
+const { WritableStreamBuffer } = require('stream-buffers');
 const prepare = require('../prepare');
 
 const rimraf = promisify(rimrafOrig);
@@ -17,6 +18,8 @@ const context = {
   nextRelease: { version: '1.2.0' },
   cwd,
   logger: { log: () => {} },
+  stdout: new WritableStreamBuffer(),
+  stderr: new WritableStreamBuffer(),
 };
 
 const cleanUp = () => rimraf(cwd);
@@ -31,7 +34,7 @@ afterEach(async () => {
 });
 
 it('writes the new version to the version.rb file', async () => {
-  await prepare({ versionFile, gemspec, gemName }, context);
+  await prepare({}, context, { versionFile, gemspec, gemName });
   const versionContents = await readFile(path.resolve(cwd, versionFile), 'utf8');
   expect(versionContents).toEqual(`# frozen_string_literal: true
 
@@ -44,7 +47,7 @@ end
 describe('when updateGemfileLock is set to `true`', () => {
   it('runs `bundle install`', async () => {
     await writeFile(path.resolve(cwd, 'Gemfile'), "source 'https://rubygems.org'\ngemspec", 'utf8');
-    await prepare({ versionFile, gemspec, gemName, updateGemfileLock: true }, context);
+    await prepare({ updateGemfileLock: true }, context, { versionFile, gemspec, gemName });
     const { stdout: packageDef } = await execa(
       'bundle',
       [
@@ -62,19 +65,18 @@ describe('when updateGemfileLock is set to `true`', () => {
 describe('when updateGemfileLock is set to a string', () => {
   it('runs the provided command', async () => {
     await writeFile(path.resolve(cwd, 'Gemfile'), "source 'https://rubygems.org'\ngemspec", 'utf8');
-    await prepare(
-      { versionFile, gemspec, gemName, updateGemfileLock: 'touch command_run' },
-      context,
-    );
+    await prepare({ updateGemfileLock: 'touch command_run' }, context, {
+      versionFile,
+      gemspec,
+      gemName,
+    });
     await expect(access(path.resolve(cwd, 'command_run'))).resolves.toBeUndefined();
   });
 });
 
 it('builds the gem', async () => {
-  const pluginConfig = { versionFile, gemspec, gemName };
-  await prepare(pluginConfig, context);
+  const { gemFile } = await prepare({}, context, { versionFile, gemspec, gemName });
 
-  const gemFile = 'a-test-gem-1.2.0.gem';
-  expect(pluginConfig.gemFile).toEqual(gemFile);
+  expect(gemFile).toEqual('a-test-gem-1.2.0.gem');
   await expect(access(path.resolve(cwd, gemFile))).resolves.toBeUndefined();
 });
