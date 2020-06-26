@@ -1,7 +1,6 @@
 // const verifyConditions = require('./src/verify');
 const util = require('util');
 const execa = require('execa');
-const path = require('path');
 const { writeFile } = require('fs').promises;
 const SemanticReleaseError = require('@semantic-release/error');
 
@@ -73,7 +72,7 @@ Please create a \`version.rb\` file with a defined \`VERSION\` constant in your 
   return versionFiles[0];
 };
 
-const verifyApiKey = async ({ env, cwd, credentialsFile }) => {
+const verifyApiKey = async ({ env, credentialsFile }) => {
   // TODO: Handle credentials stored in ~/.gem/credentials
   if (!env.GEM_HOST_API_KEY) {
     throw new SemanticReleaseError(
