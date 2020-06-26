@@ -6,6 +6,29 @@
   "author": "Rylan Collins <rylan@gusto.com>",
   "license": "MIT",
   "private": false,
+  "bugs": {
+    "url": "https://github.com/Gusto/semantic-release-rubygem/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gusto/semantic-release-rubygem.git"
+  },
+  "homepage": "https://github.com/Gusto/semantic-release-rubygem#readme",
+  "keywords": [
+    "rubygems",
+    "publish",
+    "semantic-release",
+    "version"
+  ],
+  "engines": {
+    "node": ">=10.18"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "src",
+    "index.js"
+  ],
   "scripts": {
     "lint": "eslint .",
     "test": "jest"
