@@ -7,14 +7,11 @@ module.exports = async function publish(
   { gemFile, gemName, credentialsFile },
 ) {
   logger.log(`Publishing version ${version} to gem server`);
-  const args = ['push', gemFile];
+  const args = ['push', gemFile, '--config-file', credentialsFile];
   if (gemHost) {
     args.push('--host', gemHost);
   }
-  const pushResult = execa('gem', ['push', gemFile, '--config-file', credentialsFile], {
-    cwd,
-    env,
-  });
+  const pushResult = execa('gem', args, { cwd, env });
   pushResult.stdout.pipe(stdout, { end: false });
   pushResult.stderr.pipe(stderr, { end: false });
   await pushResult;
