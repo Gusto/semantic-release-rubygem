@@ -1,6 +1,8 @@
 // const verifyConditions = require('./src/verify');
 const util = require('util');
 const execa = require('execa');
+const path = require('path');
+const { writeFile } = require('fs').promises;
 const SemanticReleaseError = require('@semantic-release/error');
 
 const glob = util.promisify(require('glob'));
@@ -71,17 +73,25 @@ Please create a \`version.rb\` file with a defined \`VERSION\` constant in your 
   return versionFiles[0];
 };
 
-const verifyApiKey = env => {
+const verifyApiKey = async ({ env, cwd, credentialsFile }) => {
+  // TODO: Handle credentials stored in ~/.gem/credentials
   if (!env.GEM_HOST_API_KEY) {
     throw new SemanticReleaseError(
       'No gem API key specified.',
       'ENOGEMAPIKEY',
       `A gem host API key must be created and set in the \`GEM_HOST_API_KEY\` environment variable on you CI environment.
 
-You can retrieve an API key either from your \`.gem/credentials\` file or in your profile in [RubyGems.org](http://rubygems.org/).
+You can retrieve an API key either from your \`~/.gem/credentials\` file or in your profile in [RubyGems.org](http://rubygems.org/).
       `,
     );
   }
+
+  await writeFile(
+    path.resolve(cwd, credentialsFile),
+    // TODO: Handle other hosts
+    `---\n:rubygems_api_key: ${env.GEM_HOST_API_KEY}`,
+    'utf8',
+  );
 };
 
 /**
@@ -89,7 +99,7 @@ You can retrieve an API key either from your \`.gem/credentials\` file or in you
  * @param {*} pluginConfig The semantic-release plugin config
  * @param {*} context The context provided by semantic-release
  */
-module.exports = async function verify(pluginConfig, { env, cwd }) {
+module.exports = async function verify(pluginConfig, { env, cwd }, { credentialsFile }) {
   // - Verify ruby installed?
 
   // - Locate gemspec and determine name
@@ -99,7 +109,7 @@ module.exports = async function verify(pluginConfig, { env, cwd }) {
   const versionFile = await findVersionFile(cwd);
 
   // - Verify env var
-  verifyApiKey(env);
+  await verifyApiKey({ env, cwd, credentialsFile });
 
   return { gemName: name, gemspec, versionFile };
 };

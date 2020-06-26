@@ -21,7 +21,8 @@
   "dependencies": {
     "@semantic-release/error": "^2.2.0",
     "execa": "^4.0.2",
-    "glob": "^7.1.6"
+    "glob": "^7.1.6",
+    "tempy": "^0.5.0"
   },
   "peerDependencies": {
     "semantic-release": ">=16.0.0 <18.0.0"
