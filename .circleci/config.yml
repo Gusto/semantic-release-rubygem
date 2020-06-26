@@ -17,18 +17,16 @@ jobs:
     steps:
       - checkout
       - gusto/yarn-install
-      # Run optional required steps before releasing
-      # - run: npm run build-script
       - run: npx semantic-release
 
 workflows:
   version: 2
   main:
     jobs:
-      # - test
+      - test
       - release:
           filters:
             branches:
               only: master
-          # requires:
-          #   - test
+          requires:
+            - test
