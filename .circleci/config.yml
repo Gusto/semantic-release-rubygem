@@ -25,10 +25,10 @@ workflows:
   version: 2
   main:
     jobs:
-      - test
+      # - test
       - release:
           filters:
             branches:
               only: master
-          requires:
-            - test
+          # requires:
+          #   - test
