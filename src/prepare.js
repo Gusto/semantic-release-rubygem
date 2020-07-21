@@ -8,7 +8,6 @@ const writeVersion = async ({ versionFile, nextVersion, logger, cwd }) => {
   const versionContents = await readFile(fullVersionPath, 'utf8');
   const newContents = versionContents.replace(VERSION_REGEX, `$1${nextVersion}$2`);
   logger.log('Writing version %s to `%s`', nextVersion, versionFile);
-  // TODO: Check to insure the contents changed. Or, maybe verify the format of the version in verify?
   await writeFile(fullVersionPath, newContents, 'utf8');
 };
 

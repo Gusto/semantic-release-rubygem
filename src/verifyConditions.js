@@ -1,10 +1,11 @@
 // const verifyConditions = require('./src/verify');
 const util = require('util');
 const execa = require('execa');
-const { writeFile } = require('fs').promises;
+const path = require('path');
+const { writeFile, readFile } = require('fs').promises;
 const SemanticReleaseError = require('@semantic-release/error');
-
 const glob = util.promisify(require('glob'));
+const { VERSION_REGEX } = require('./common');
 
 const loadGemspec = async cwd => {
   const gemspecs = await glob('*.gemspec', { cwd });
@@ -55,8 +56,7 @@ Please make sure to add a valid \`name\` for your gem in your \`.gemspec\`.
   return { name: gemName, gemspec };
 };
 
-const findVersionFile = async cwd => {
-  // TODO: Should we verify that we can find the version here?
+const verifyVersionFile = async cwd => {
   const versionFiles = await glob('lib/**/version.rb', { cwd });
   if (versionFiles.length !== 1) {
     throw new SemanticReleaseError(
@@ -69,7 +69,21 @@ Please create a \`version.rb\` file with a defined \`VERSION\` constant in your 
     );
   }
 
-  return versionFiles[0];
+  const [versionFile] = versionFiles;
+  const fullVersionPath = path.resolve(cwd, versionFile);
+  const versionContents = await readFile(fullVersionPath, 'utf8');
+  if (!VERSION_REGEX.test(versionContents)) {
+    throw new SemanticReleaseError(
+      `Couldn't find a valid version constant defined in \`${versionFile}\`.`,
+      'EINVALIDVERSIONFILE',
+      `Your \`version.rb\` file must define a \`VERSION\` constant.
+
+Please define your gem's version a string constant named \`VERSION\` inside your \`version.rb\` file.
+      `,
+    );
+  }
+
+  return versionFile;
 };
 
 const verifyApiKey = async ({ env, credentialsFile }) => {
@@ -105,7 +119,7 @@ module.exports = async function verify(pluginConfig, { env, cwd }, { credentials
   const { name, gemspec } = await loadGemspec(cwd);
 
   // - Locate version file
-  const versionFile = await findVersionFile(cwd);
+  const versionFile = await verifyVersionFile(cwd);
 
   // - Verify env var
   await verifyApiKey({ env, cwd, credentialsFile });
