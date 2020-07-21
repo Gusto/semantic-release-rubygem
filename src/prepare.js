@@ -7,7 +7,8 @@ const writeVersion = async ({ versionFile, nextVersion, logger, cwd }) => {
   const versionContents = await readFile(fullVersionPath, 'utf8');
   const newContents = versionContents.replace(
     /(VERSION = ['"])[0-9.]*(['"])/,
-    `$1${nextVersion}$2`,
+    // see https://guides.rubygems.org/patterns/#prerelease-gems
+    `$1${nextVersion.replace('-', '.')}$2`,
   );
   logger.log('Writing version %s to `%s`', nextVersion, versionFile);
   // TODO: Check to insure the contents changed. Or, maybe verify the format of the version in verify?
