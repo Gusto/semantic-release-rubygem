@@ -24,7 +24,6 @@ Please follow the "[Make your own gem guide](https://guides.rubygems.org/make-yo
   const [gemspec] = gemspecs;
   let gemName = null;
   try {
-    // TODO: Use cwd here instead of the full path?
     const { stdout } = await execa(
       'ruby',
       ['-e', `puts Gem::Specification.load('${gemspec}').name`],
