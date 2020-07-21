@@ -1,16 +1,12 @@
 const { readFile, writeFile } = require('fs').promises;
 const path = require('path');
 const execa = require('execa');
+const { VERSION_REGEX } = require('./common');
 
 const writeVersion = async ({ versionFile, nextVersion, logger, cwd }) => {
   const fullVersionPath = path.resolve(cwd, versionFile);
   const versionContents = await readFile(fullVersionPath, 'utf8');
-  const newContents = versionContents.replace(
-    // taken from https://github.com/svenfuchs/gem-release/blob/0f5f2382ef960d40169400a8aa25085cd37d26b0/lib/gem/release/files/version.rb#L7
-    /(VERSION\s*=\s*['"])(?:(?!"|').)*(['"])/,
-    // see https://guides.rubygems.org/patterns/#prerelease-gems
-    `$1${nextVersion.replace('-', '.')}$2`,
-  );
+  const newContents = versionContents.replace(VERSION_REGEX, `$1${nextVersion}$2`);
   logger.log('Writing version %s to `%s`', nextVersion, versionFile);
   // TODO: Check to insure the contents changed. Or, maybe verify the format of the version in verify?
   await writeFile(fullVersionPath, newContents, 'utf8');
