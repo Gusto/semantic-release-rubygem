@@ -6,7 +6,8 @@ const writeVersion = async ({ versionFile, nextVersion, logger, cwd }) => {
   const fullVersionPath = path.resolve(cwd, versionFile);
   const versionContents = await readFile(fullVersionPath, 'utf8');
   const newContents = versionContents.replace(
-    /(VERSION = ['"])[0-9.]*(['"])/,
+    // taken from https://github.com/svenfuchs/gem-release/blob/0f5f2382ef960d40169400a8aa25085cd37d26b0/lib/gem/release/files/version.rb#L7
+    /(VERSION\s*=\s*['"])(?:(?!"|').)*(['"])/,
     // see https://guides.rubygems.org/patterns/#prerelease-gems
     `$1${nextVersion.replace('-', '.')}$2`,
   );
