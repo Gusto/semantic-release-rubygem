@@ -66,6 +66,17 @@ describe('when there is no version file', () => {
   });
 });
 
+describe('when no version can be found in the version file', () => {
+  it('throws an error', async () => {
+    const cwd = path.resolve(__dirname, './fixtures/invalid-version-file');
+    await expect(
+      verifyConditions({}, { cwd, env: defaultEnv }, { credentialsFile }),
+    ).rejects.toThrow(
+      /^Couldn't find a valid version constant defined in `lib\/test-gem\/version.rb`.$/,
+    );
+  });
+});
+
 it('creates the credentials file', async () => {
   await verifyConditions({}, { cwd: validCwd, env: defaultEnv }, { credentialsFile });
   const credentialsContents = await readFile(credentialsFile, 'utf8');

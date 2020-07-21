@@ -44,6 +44,23 @@ end
 `);
 });
 
+describe('when the version.rb contains a prerelease version', () => {
+  it('writes the new version to the version.rb file', async () => {
+    await prepare(
+      {},
+      { ...context, nextRelease: { version: '1.0.0-alpha.1' } },
+      { versionFile, gemspec, gemName },
+    );
+    const versionContents = await readFile(path.resolve(cwd, versionFile), 'utf8');
+    expect(versionContents).toEqual(`# frozen_string_literal: true
+
+module TestGem
+  VERSION = '1.0.0-alpha.1'
+end
+`);
+  });
+});
+
 describe('when updateGemfileLock is set to `true`', () => {
   it('runs `bundle install`', async () => {
     await writeFile(path.resolve(cwd, 'Gemfile'), "source 'https://rubygems.org'\ngemspec", 'utf8');
