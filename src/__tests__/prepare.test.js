@@ -59,6 +59,17 @@ module TestGem
 end
 `);
   });
+
+  it('builds the gem', async () => {
+    const { gemFile } = await prepare(
+      {},
+      { ...context, nextRelease: { version: '1.0.0-alpha.1' } },
+      { versionFile, gemspec, gemName },
+    );
+
+    expect(gemFile).toEqual('a-test-gem-1.0.0.alpha.1.gem');
+    await expect(access(path.resolve(cwd, gemFile))).resolves.toBeUndefined();
+  });
 });
 
 describe('when updateGemfileLock is set to `true`', () => {
