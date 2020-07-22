@@ -6,7 +6,12 @@ const { VERSION_REGEX } = require('./common');
 const writeVersion = async ({ versionFile, nextVersion, logger, cwd }) => {
   const fullVersionPath = path.resolve(cwd, versionFile);
   const versionContents = await readFile(fullVersionPath, 'utf8');
-  const newContents = versionContents.replace(VERSION_REGEX, `$1${nextVersion}$2`);
+  const newContents = versionContents.replace(
+    VERSION_REGEX,
+    // Rubygems replaces all `-` with `.pre.`, which causes odd version differences between tags/releases
+    // and the published gem version. Replacing `-` with `.` is a smaller difference.
+    `$1${nextVersion.replace('-', '.')}$2`,
+  );
   logger.log('Writing version %s to `%s`', nextVersion, versionFile);
   await writeFile(fullVersionPath, newContents, 'utf8');
 };

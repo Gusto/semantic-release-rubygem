@@ -48,13 +48,25 @@ describe('when the gemspec has no name defined', () => {
   });
 });
 
-it('finds the version file', async () => {
+it('verifies the version file', async () => {
   const { versionFile } = await verifyConditions(
     {},
     { cwd: validCwd, env: defaultEnv },
     { credentialsFile },
   );
   expect(versionFile).toEqual('lib/test-gem/version.rb');
+});
+
+describe('when the existing version file contains a prerelease version', () => {
+  it('verifies the version file', async () => {
+    const cwd = path.resolve(__dirname, './fixtures/prerelease');
+    const { versionFile } = await verifyConditions(
+      {},
+      { cwd, env: defaultEnv },
+      { credentialsFile },
+    );
+    expect(versionFile).toEqual('lib/test-gem/version.rb');
+  });
 });
 
 describe('when there is no version file', () => {
