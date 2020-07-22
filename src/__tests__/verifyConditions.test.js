@@ -48,7 +48,7 @@ describe('when the gemspec has no name defined', () => {
   });
 });
 
-it('finds the version file', async () => {
+it('verifies the version file', async () => {
   const { versionFile } = await verifyConditions(
     {},
     { cwd: validCwd, env: defaultEnv },

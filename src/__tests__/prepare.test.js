@@ -55,7 +55,7 @@ describe('when the version.rb contains a prerelease version', () => {
     expect(versionContents).toEqual(`# frozen_string_literal: true
 
 module TestGem
-  VERSION = '1.0.0-alpha.1'
+  VERSION = '1.0.0.alpha.1'
 end
 `);
   });
