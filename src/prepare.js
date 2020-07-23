@@ -1,6 +1,7 @@
 const { readFile, writeFile } = require('fs').promises;
 const path = require('path');
 const execa = require('execa');
+const { move } = require('fs-extra');
 const { VERSION_REGEX } = require('./common');
 
 const writeVersion = async ({ versionFile, nextVersion, logger, cwd }) => {
@@ -39,7 +40,7 @@ const buildGem = async ({ gemspec, gemName, version, cwd, env, logger, stdout, s
 };
 
 module.exports = async function prepare(
-  { updateGemfileLock = false },
+  { updateGemfileLock = false, gemFileDir = false },
   { nextRelease: { version }, cwd, env, logger, stdout, stderr },
   { versionFile, gemspec, gemName },
 ) {
@@ -49,7 +50,7 @@ module.exports = async function prepare(
     await bundleInstall({ updateGemfileLock, cwd, env, logger, stdout, stderr });
   }
 
-  const gemFile = await buildGem({
+  let gemFile = await buildGem({
     gemspec,
     gemName,
     version: gemVersion,
@@ -59,6 +60,18 @@ module.exports = async function prepare(
     stdout,
     stderr,
   });
+
+  if (gemFileDir) {
+    const gemFileSource = path.resolve(cwd, gemFile);
+    const gemFileDestination = path.resolve(cwd, gemFileDir.trim(), gemFile);
+
+    // Only move the gem file if we need to
+    if (gemFileSource !== gemFileDestination) {
+      await move(gemFileSource, gemFileDestination);
+    }
+
+    gemFile = path.join(gemFileDir.trim(), gemFile);
+  }
 
   return { gemFile };
 };
