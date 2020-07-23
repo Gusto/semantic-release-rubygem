@@ -33,6 +33,8 @@ afterEach(async () => {
   await cleanUp();
 });
 
+const expectFileExists = file => expect(access(path.resolve(cwd, file))).resolves.toBeUndefined();
+
 it('writes the new version to the version.rb file', async () => {
   await prepare({}, context, { versionFile, gemspec, gemName });
   const versionContents = await readFile(path.resolve(cwd, versionFile), 'utf8');
@@ -68,7 +70,7 @@ end
     );
 
     expect(gemFile).toEqual('a-test-gem-1.0.0.alpha.1.gem');
-    await expect(access(path.resolve(cwd, gemFile))).resolves.toBeUndefined();
+    await expectFileExists(gemFile);
   });
 });
 
@@ -98,7 +100,7 @@ describe('when updateGemfileLock is set to a string', () => {
       gemspec,
       gemName,
     });
-    await expect(access(path.resolve(cwd, 'command_run'))).resolves.toBeUndefined();
+    await expectFileExists('command_run');
   });
 });
 
@@ -106,5 +108,18 @@ it('builds the gem', async () => {
   const { gemFile } = await prepare({}, context, { versionFile, gemspec, gemName });
 
   expect(gemFile).toEqual('a-test-gem-1.2.0.gem');
-  await expect(access(path.resolve(cwd, gemFile))).resolves.toBeUndefined();
+  await expectFileExists(gemFile);
+});
+
+describe('when gemFileDir is set', () => {
+  it('builds the gem in the provided dir', async () => {
+    const { gemFile } = await prepare({ gemFileDir: 'some_dir' }, context, {
+      versionFile,
+      gemspec,
+      gemName,
+    });
+
+    expect(gemFile).toEqual('some_dir/a-test-gem-1.2.0.gem');
+    await expectFileExists(gemFile);
+  });
 });
