@@ -2,20 +2,25 @@ const { unlink } = require('fs').promises;
 const execa = require('execa');
 
 module.exports = async function publish(
-  { gemHost },
+  { gemHost, gemPublish = true },
   { cwd, env, logger, nextRelease: { version }, stdout, stderr },
   { gemFile, gemName, credentialsFile },
 ) {
-  logger.log(`Publishing version ${version} to gem server`);
-  const args = ['push', gemFile, '--config-file', credentialsFile];
-  if (gemHost) {
-    args.push('--host', gemHost);
-  }
-  const pushResult = execa('gem', args, { cwd, env });
-  pushResult.stdout.pipe(stdout, { end: false });
-  pushResult.stderr.pipe(stderr, { end: false });
-  await pushResult;
+  if (gemPublish !== false) {
+    logger.log(`Publishing version ${version} to gem server`);
+    const args = ['push', gemFile, '--config-file', credentialsFile];
+    if (gemHost) {
+      args.push('--host', gemHost);
+    }
+    const pushResult = execa('gem', args, { cwd, env });
+    pushResult.stdout.pipe(stdout, { end: false });
+    pushResult.stderr.pipe(stderr, { end: false });
+    await pushResult;
 
-  logger.log(`Published version ${version} of ${gemName} to gem server`);
+    logger.log(`Published version ${version} of ${gemName} to gem server`);
+  } else {
+    logger.log(`Skip publishing to gem server because gemPublish is ${gemPublish !== false}`);
+  }
+
   await unlink(gemFile);
 };
