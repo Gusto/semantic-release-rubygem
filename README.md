@@ -35,7 +35,7 @@ Add the plugin to the [**semantic-release** configuration file](https://github.c
 The gem server authentication configuration is **required**.
 
 The API key must be set using the `GEM_HOST_API_KEY` environment variable. To retrieve the key, you can:
-1. Login to [RubyGems.org](https://rubyggems.org) and click on ['Edit Profile'](https://rubygems.org/profile/edit). You'll find the key in the 'API Access' section of the page.
+1. Login to [RubyGems.org](https://rubygems.org) and click on ['Edit Profile'](https://rubygems.org/profile/edit). You'll find the key in the 'API Access' section of the page.
 2. Sign into your gem host using the [`gem signin`](https://guides.rubygems.org/command-reference/#gem-signin) command. After you enter your credentials, your API key will be stored as a YAML value in the `~/.gem/credentials` file under the `rubygems_api_key` key (or the hostname of your gem server).
 
 ### gemspec file
