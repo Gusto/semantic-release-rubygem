@@ -114,14 +114,18 @@ You can retrieve an API key either from your \`~/.gem/credentials\` file or in y
 module.exports = async function verify(pluginConfig, { env, cwd }, { credentialsFile }) {
   // - Verify ruby installed?
 
+  const { pkgRoot } = pluginConfig;
+
+  const gemSpecPkgRoot = pkgRoot ? path.resolve(cwd, pkgRoot) : cwd;
+
   // - Locate gemspec and determine name
-  const { name, gemspec } = await loadGemspec(cwd);
+  const { name, gemspec } = await loadGemspec(gemSpecPkgRoot);
 
   // - Locate version file
-  const versionFile = await verifyVersionFile(cwd);
+  const versionFile = await verifyVersionFile(gemSpecPkgRoot);
 
   // - Verify env var
-  await verifyApiKey({ env, cwd, credentialsFile });
+  await verifyApiKey({ env, gemSpecPkgRoot, credentialsFile });
 
   return { gemName: name, gemspec, versionFile };
 };
