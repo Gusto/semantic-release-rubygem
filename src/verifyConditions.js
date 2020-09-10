@@ -37,6 +37,8 @@ Please follow the "[Make your own gem guide](https://guides.rubygems.org/make-yo
       `A valid [.gemspec](https://guides.rubygems.org/specification-reference/) is required to release a Ruby gem.
 
 Please follow the "[Make your own gem guide](https://guides.rubygems.org/make-your-own-gem/)" to create a valid \`.gemspec\` file
+
+Error message: ${error.message}
       `,
     );
   }
@@ -85,7 +87,7 @@ Please define your gem's version a string constant named \`VERSION\` inside your
   return versionFile;
 };
 
-const verifyApiKey = async ({ env, credentialsFile }) => {
+const verifyApiKey = async ({ env, credentialsFile, gemHost }) => {
   // TODO: Handle credentials stored in ~/.gem/credentials
   if (!env.GEM_HOST_API_KEY) {
     throw new SemanticReleaseError(
@@ -98,12 +100,21 @@ You can retrieve an API key either from your \`~/.gem/credentials\` file or in y
     );
   }
 
-  await writeFile(
-    credentialsFile,
-    // TODO: Handle other hosts
-    `---\n:rubygems_api_key: ${env.GEM_HOST_API_KEY}`,
-    'utf8',
-  );
+  // GH Packages
+  if (gemHost && gemHost.includes('rubygems.pkg.github.com')) {
+    await writeFile(
+      credentialsFile,
+      `---\n:github: Bearer ${env.GEM_HOST_API_KEY}`,
+      'utf8',
+    );
+  } else {
+    await writeFile(
+      credentialsFile,
+      // TODO: Handle other hosts
+      `---\n:rubygems_api_key: ${env.GEM_HOST_API_KEY}`,
+      'utf8',
+    );
+  }
 };
 
 /**
@@ -114,7 +125,7 @@ You can retrieve an API key either from your \`~/.gem/credentials\` file or in y
 module.exports = async function verify(pluginConfig, { env, cwd }, { credentialsFile }) {
   // - Verify ruby installed?
 
-  const { pkgRoot } = pluginConfig;
+  const { pkgRoot, gemHost } = pluginConfig;
 
   const gemSpecPkgRoot = pkgRoot ? path.resolve(cwd, pkgRoot) : cwd;
 
@@ -125,7 +136,7 @@ module.exports = async function verify(pluginConfig, { env, cwd }, { credentials
   const versionFile = await verifyVersionFile(gemSpecPkgRoot);
 
   // - Verify env var
-  await verifyApiKey({ env, gemSpecPkgRoot, credentialsFile });
+  await verifyApiKey({ env, credentialsFile, gemHost });
 
   return { gemName: name, gemspec, versionFile };
 };

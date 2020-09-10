@@ -14,7 +14,11 @@ module.exports = async function publish(
     const args = ['push', gemFile, '--config-file', credentialsFile];
     if (gemHost) {
       args.push('--host', gemHost);
+      if (gemHost.includes('rubygems.pkg.github.com')) {
+        args.push('--key', 'github');
+      }
     }
+
     const pushResult = execa('gem', args, { cwd: gemSpecPkgRoot, env });
     pushResult.stdout.pipe(stdout, { end: false });
     pushResult.stderr.pipe(stderr, { end: false });
