@@ -62,3 +62,6 @@ end
 | `updateGemfileLock` | Whether to update the version of the gem to publish in the `Gemfile.lock`. This is useful if you are using the [`@semantic-release/git`](https://github.com/semantic-release/git) plugin to keep the version up to date in your git repo. When set to `true` the plugin will run `bundle install` to update the version. If another command is desired, it can be set by passing a string (e.g. `bundle appraisal install`). | `false` |
 | `gemPublish` | Whether to publish your gem to the gem server. | `true` |
 | `gemFileDir` | Directory path in which to write the the built `.gem` file. If `false`, the `.gem` file will not be kept on the file system. | `false` |
+| `pkgRoot`    | Directory path to publish.	 | `.` | 
+
+Note: The `pkgRoot` directory must contain a *.gemspec file.

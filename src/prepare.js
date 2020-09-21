@@ -40,21 +40,28 @@ const buildGem = async ({ gemspec, gemName, version, cwd, env, logger, stdout, s
 };
 
 module.exports = async function prepare(
-  { updateGemfileLock = false, gemFileDir = false },
+  { updateGemfileLock = false, gemFileDir = false, pkgRoot },
   { nextRelease: { version }, cwd, env, logger, stdout, stderr },
   { versionFile, gemspec, gemName },
 ) {
-  const { gemVersion } = await writeVersion({ versionFile, nextVersion: version, logger, cwd });
+  const gemSpecPkgRoot = pkgRoot ? path.resolve(cwd, pkgRoot) : cwd;
+
+  const { gemVersion } = await writeVersion({
+    versionFile,
+    nextVersion: version,
+    logger,
+    cwd: gemSpecPkgRoot,
+  });
 
   if (updateGemfileLock) {
-    await bundleInstall({ updateGemfileLock, cwd, env, logger, stdout, stderr });
+    await bundleInstall({ updateGemfileLock, cwd: gemSpecPkgRoot, env, logger, stdout, stderr });
   }
 
   let gemFile = await buildGem({
     gemspec,
     gemName,
     version: gemVersion,
-    cwd,
+    cwd: gemSpecPkgRoot,
     env,
     logger,
     stdout,
@@ -62,8 +69,8 @@ module.exports = async function prepare(
   });
 
   if (gemFileDir) {
-    const gemFileSource = path.resolve(cwd, gemFile);
-    const gemFileDestination = path.resolve(cwd, gemFileDir.trim(), gemFile);
+    const gemFileSource = path.resolve(gemSpecPkgRoot, gemFile);
+    const gemFileDestination = path.resolve(gemSpecPkgRoot, gemFileDir.trim(), gemFile);
 
     // Only move the gem file if we need to
     if (gemFileSource !== gemFileDestination) {

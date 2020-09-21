@@ -1,18 +1,25 @@
 const { unlink } = require('fs').promises;
 const execa = require('execa');
+const path = require('path');
 
 module.exports = async function publish(
-  { gemHost, gemPublish = true, gemFileDir = false },
+  { gemHost, gemPublish = true, gemFileDir = false, pkgRoot },
   { cwd, env, logger, nextRelease: { version }, stdout, stderr },
   { gemFile, gemName, credentialsFile },
 ) {
+  const gemSpecPkgRoot = pkgRoot ? path.resolve(cwd, pkgRoot) : cwd;
+
   if (gemPublish !== false) {
     logger.log(`Publishing version ${version} to gem server`);
     const args = ['push', gemFile, '--config-file', credentialsFile];
     if (gemHost) {
       args.push('--host', gemHost);
+      if (gemHost.includes('rubygems.pkg.github.com')) {
+        args.push('--key', 'github');
+      }
     }
-    const pushResult = execa('gem', args, { cwd, env });
+
+    const pushResult = execa('gem', args, { cwd: gemSpecPkgRoot, env });
     pushResult.stdout.pipe(stdout, { end: false });
     pushResult.stderr.pipe(stderr, { end: false });
     await pushResult;
@@ -23,6 +30,7 @@ module.exports = async function publish(
   }
 
   if (gemFileDir === false) {
-    await unlink(gemFile);
+    const gemFilePkgRoot = pkgRoot ? path.resolve(cwd, pkgRoot, gemFile) : gemFile;
+    await unlink(gemFilePkgRoot);
   }
 };
