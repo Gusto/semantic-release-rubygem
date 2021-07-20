@@ -8,7 +8,7 @@ module.exports = async function publish(
 ) {
   if (gemPublish !== false) {
     logger.log(`Publishing version ${version} to gem server`);
-    const args = ['push', gemFile, '--config-file', credentialsFile];
+    const args = ['push', gemFile, '--config-file', credentialsFile, '--key', 'api_key'];
     if (gemHost) {
       args.push('--host', gemHost);
     }
