@@ -100,8 +100,7 @@ You can retrieve an API key either from your \`~/.gem/credentials\` file or in y
 
   await writeFile(
     credentialsFile,
-    // TODO: Handle other hosts
-    `---\n:rubygems_api_key: ${env.GEM_HOST_API_KEY}`,
+    `---\n:api_key: ${env.GEM_HOST_API_KEY}`,
     'utf8',
   );
 };
