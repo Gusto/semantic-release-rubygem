@@ -14,6 +14,10 @@
 $ npm install semantic-release-rubygem -D
 ```
 
+### Ruby binary
+
+For the validation step of the plugin to work, you need to have a `ruby` binary installed on your build environment.
+
 ## Usage
 
 Add the plugin to the [**semantic-release** configuration file](https://github.com/semantic-release/semantic-release/blob/master/docs/usage/configuration.md#configuration):
