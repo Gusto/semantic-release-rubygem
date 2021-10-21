@@ -5,7 +5,7 @@ const path = require('path');
 const { writeFile, readFile } = require('fs').promises;
 const SemanticReleaseError = require('@semantic-release/error');
 const glob = util.promisify(require('glob'));
-const { VERSION_REGEX } = require('./common');
+const { VERSION_REGEX, CONFIG_DEFAULTS } = require('./common');
 
 const loadGemspec = async cwd => {
   const gemspecs = await glob('*.gemspec', { cwd });
@@ -113,6 +113,10 @@ You can retrieve an API key either from your \`~/.gem/credentials\` file or in y
  */
 module.exports = async function verify(pluginConfig, { env, cwd }, { credentialsFile }) {
   // - Verify ruby installed?
+  const { gemPublish } = {
+    ...CONFIG_DEFAULTS,
+    ...pluginConfig,
+  };
 
   // - Locate gemspec and determine name
   const { name, gemspec } = await loadGemspec(cwd);
@@ -120,8 +124,10 @@ module.exports = async function verify(pluginConfig, { env, cwd }, { credentials
   // - Locate version file
   const versionFile = await verifyVersionFile(cwd);
 
-  // - Verify env var
-  await verifyApiKey({ env, cwd, credentialsFile });
+  if (gemPublish) {
+    // - Verify env var
+    await verifyApiKey({ env, cwd, credentialsFile });
+  }
 
   return { gemName: name, gemspec, versionFile };
 };
