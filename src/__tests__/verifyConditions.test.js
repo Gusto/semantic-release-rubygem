@@ -96,9 +96,23 @@ it('creates the credentials file', async () => {
 });
 
 describe('when the API key env var is not defined', () => {
-  it('throws an error', async () => {
-    await expect(
-      verifyConditions({}, { cwd: validCwd, env: {} }, { credentialsFile }),
-    ).rejects.toThrow(/^No gem API key specified.$/);
+  describe('with config defaults', () => {
+    it('throws an error', async () => {
+      await expect(
+        verifyConditions({}, { cwd: validCwd, env: {} }, { credentialsFile }),
+      ).rejects.toThrow(/^No gem API key specified.$/);
+    });
+  });
+
+  describe('with gemPublish false', () => {
+    it('does not throw an error', async () => {
+      await expect(
+        verifyConditions({ gemPublish: false }, { cwd: validCwd, env: {} }, { credentialsFile }),
+      ).resolves.toEqual({
+        gemName: 'a-test-gem',
+        gemspec: 'test-gem.gemspec',
+        versionFile: 'lib/test-gem/version.rb',
+      });
+    });
   });
 });
