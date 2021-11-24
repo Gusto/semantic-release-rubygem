@@ -21,7 +21,7 @@
     "version"
   ],
   "engines": {
-    "node": ">=10.18"
+    "node": ">=14.17"
   },
   "files": [
     "LICENSE",
@@ -49,6 +49,6 @@
     "tempy": "^0.5.0"
   },
   "peerDependencies": {
-    "semantic-release": ">=16.0.0 <18.0.0"
+    "semantic-release": ">=16.0.0 <19.0.0"
   }
 }
