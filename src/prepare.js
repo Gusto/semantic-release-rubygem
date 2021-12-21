@@ -31,7 +31,7 @@ const buildGem = async ({ gemspec, gemName, version, cwd, env, logger, stdout, s
   const gemFile = `${gemName}-${version}.gem`;
   // TODO: Parse the gem file name from the output?
   logger.log('Building gem `%s`', gemFile);
-  const buildResult = execa('gem', ['build', gemspec], { cwd, env });
+  const buildResult = execa('gem', ['build', gemspec, '-o', gemFile], { cwd, env });
   buildResult.stdout.pipe(stdout, { end: false });
   buildResult.stderr.pipe(stderr, { end: false });
   await buildResult;
