@@ -49,6 +49,6 @@
     "tempy": "^0.5.0"
   },
   "peerDependencies": {
-    "semantic-release": ">=16.0.0 <18.0.0"
+    "semantic-release": ">=16.0.0"
   }
 }
