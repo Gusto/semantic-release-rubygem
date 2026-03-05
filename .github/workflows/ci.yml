@@ -21,3 +21,20 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn lint
       - run: yarn test
+
+  semantic-release-dry-run:
+    if: github.event_name == 'pull_request'
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+      - run: yarn install --frozen-lockfile
+      - run: npx semantic-release --dry-run
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
