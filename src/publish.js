@@ -1,7 +1,7 @@
-const { unlink } = require('fs').promises;
-const execa = require('execa');
+import { unlink } from 'fs/promises';
+import { execa } from 'execa';
 
-module.exports = async function publish(
+export default async function publish(
   { gemHost, gemPublish = true, gemFileDir = false },
   { cwd, env, logger, nextRelease: { version }, stdout, stderr },
   { gemFile, gemName, credentialsFile },
@@ -25,4 +25,4 @@ module.exports = async function publish(
   if (gemFileDir === false) {
     await unlink(gemFile);
   }
-};
+}

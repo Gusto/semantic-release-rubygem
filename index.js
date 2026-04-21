@@ -1,9 +1,9 @@
-const tempy = require('tempy');
-const gemVerify = require('./src/verifyConditions');
-const gemPrepare = require('./src/prepare');
-const gemPublish = require('./src/publish');
+import { temporaryFile } from 'tempy';
+import gemVerify from './src/verifyConditions.js';
+import gemPrepare from './src/prepare.js';
+import gemPublish from './src/publish.js';
 
-const credentialsFile = tempy.file({ name: 'gem_credentials' });
+const credentialsFile = temporaryFile({ name: 'gem_credentials' });
 let gemName;
 let gemspec;
 let versionFile;
@@ -21,4 +21,4 @@ async function publish(pluginConfig, context) {
   await gemPublish(pluginConfig, context, { gemFile, gemName, credentialsFile });
 }
 
-module.exports = { verifyConditions, prepare, publish };
+export { verifyConditions, prepare, publish };
