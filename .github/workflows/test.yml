@@ -18,6 +18,6 @@ jobs:
           cache: yarn
       - uses: ruby/setup-ruby@v1.305.0
         with:
-          ruby-version: "3.3"
+          ruby-version: "4.0"
       - run: yarn install --frozen-lockfile
       - run: yarn test
