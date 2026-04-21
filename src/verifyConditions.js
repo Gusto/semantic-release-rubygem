@@ -24,7 +24,7 @@ Please follow the "[Make your own gem guide](https://guides.rubygems.org/make-yo
   try {
     const { stdout } = await execa(
       'ruby',
-      ['-e', `puts Gem::Specification.load('${gemspec}').name`],
+      ['-e', "puts Gem::Specification.load(ARGV[0]).name", gemspec],
       { cwd },
     );
     gemName = stdout;
