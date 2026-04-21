@@ -4,7 +4,7 @@ const execa = require('execa');
 const { move } = require('fs-extra');
 const { VERSION_REGEX } = require('./common');
 
-const writeVersion = async ({ versionFile, nextVersion, logger, cwd }) => {
+const writeVersion = async ({ versionFile, nextVersion, logger, cwd, gemspec }) => {
   // Rubygems replaces all `-` with `.pre.`, which causes odd version differences between tags/releases
   // and the published gem version. Replacing `-` with `.` is a smaller difference.
   const gemVersion = nextVersion.replace('-', '.');
@@ -13,6 +13,12 @@ const writeVersion = async ({ versionFile, nextVersion, logger, cwd }) => {
   const newContents = versionContents.replace(VERSION_REGEX, `$1${gemVersion}$2`);
   logger.log('Writing version %s to `%s`', nextVersion, versionFile);
   await writeFile(fullVersionPath, newContents, 'utf8');
+
+  const fullGemSpecPath = path.resolve(cwd, gemspec);
+  const gemSpecContents = await readFile(fullGemSpecPath, 'utf8');
+  const newGemSpecContents = gemSpecContents.replace(/(.version\s+=\s)(.+)/, `$1'${gemVersion}'`);
+  logger.log('Writing gemspec %s to `%s`', nextVersion, gemspec);
+  await writeFile(fullGemSpecPath, newGemSpecContents, 'utf8');
 
   return { gemVersion };
 };
@@ -31,7 +37,7 @@ const buildGem = async ({ gemspec, gemName, version, cwd, env, logger, stdout, s
   const gemFile = `${gemName}-${version}.gem`;
   // TODO: Parse the gem file name from the output?
   logger.log('Building gem `%s`', gemFile);
-  const buildResult = execa('gem', ['build', gemspec], { cwd, env });
+  const buildResult = execa('gem', ['build', gemspec, '-o', gemFile], { cwd, env });
   buildResult.stdout.pipe(stdout, { end: false });
   buildResult.stderr.pipe(stderr, { end: false });
   await buildResult;
@@ -44,7 +50,7 @@ module.exports = async function prepare(
   { nextRelease: { version }, cwd, env, logger, stdout, stderr },
   { versionFile, gemspec, gemName },
 ) {
-  const { gemVersion } = await writeVersion({ versionFile, nextVersion: version, logger, cwd });
+  const { gemVersion } = await writeVersion({ versionFile, nextVersion: version, logger, cwd, gemspec });
 
   if (updateGemfileLock) {
     await bundleInstall({ updateGemfileLock, cwd, env, logger, stdout, stderr });
