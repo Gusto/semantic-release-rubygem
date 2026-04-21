@@ -22,7 +22,7 @@
   ],
   "type": "module",
   "engines": {
-    "node": ">=18.0.0"
+    "node": "^22.14.0 || >=24.10.0"
   },
   "files": [
     "LICENSE",

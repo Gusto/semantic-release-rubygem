@@ -16,7 +16,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
-          node-version: "20"
+          node-version: "22"
           cache: yarn
       - uses: ruby/setup-ruby@0cb964fd540e0a24c900370abf38a33466142735 # v1
         with:
