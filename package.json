@@ -33,7 +33,6 @@
   "scripts": {
     "lint": "eslint .",
     "test": "node --experimental-vm-modules node_modules/.bin/jest"
-
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
