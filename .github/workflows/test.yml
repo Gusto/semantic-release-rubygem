@@ -22,4 +22,5 @@ jobs:
         with:
           ruby-version: "4.0"
       - run: yarn install --frozen-lockfile
+      - run: yarn lint
       - run: yarn test
