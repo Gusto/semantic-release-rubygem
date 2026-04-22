@@ -1,15 +1,18 @@
-const path = require('path');
-const tempy = require('tempy');
-const { readFile } = require('fs').promises;
-const SemanticReleaseError = require('@semantic-release/error');
-const verifyConditions = require('../verifyConditions');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { readFile } from 'fs/promises';
+import { temporaryFile } from 'tempy';
+import SemanticReleaseError from '@semantic-release/error';
+import verifyConditions from '../verifyConditions.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const defaultEnv = { GEM_HOST_API_KEY: '123' };
 const validCwd = path.resolve(__dirname, './fixtures/valid');
 let credentialsFile;
 
 beforeEach(() => {
-  credentialsFile = tempy.file();
+  credentialsFile = temporaryFile();
 });
 
 it('finds and loads the gemspec', async () => {

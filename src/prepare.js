@@ -1,8 +1,8 @@
-const { readFile, writeFile } = require('fs').promises;
-const path = require('path');
-const execa = require('execa');
-const { move } = require('fs-extra');
-const { VERSION_REGEX } = require('./common');
+import { readFile, writeFile } from 'fs/promises';
+import path from 'path';
+import { execa } from 'execa';
+import { move } from 'fs-extra';
+import { VERSION_REGEX } from './common.js';
 
 const writeVersion = async ({ versionFile, nextVersion, logger, cwd }) => {
   // Rubygems replaces all `-` with `.pre.`, which causes odd version differences between tags/releases
@@ -20,7 +20,8 @@ const writeVersion = async ({ versionFile, nextVersion, logger, cwd }) => {
 const bundleInstall = async ({ updateGemfileLock, cwd, env, logger, stdout, stderr }) => {
   const command = typeof updateGemfileLock === 'string' ? updateGemfileLock : 'bundle install';
   logger.log('Updating lock file with command `%s`', command);
-  const installResult = execa.command(command, { cwd, env });
+  const [bin, ...args] = command.trim().split(/\s+/);
+  const installResult = execa(bin, args, { cwd, env });
   installResult.stdout.pipe(stdout, { end: false });
   installResult.stderr.pipe(stderr, { end: false });
 
@@ -39,7 +40,7 @@ const buildGem = async ({ gemspec, gemName, version, cwd, env, logger, stdout, s
   return gemFile;
 };
 
-module.exports = async function prepare(
+export default async function prepare(
   { updateGemfileLock = false, gemFileDir = false },
   { nextRelease: { version }, cwd, env, logger, stdout, stderr },
   { versionFile, gemspec, gemName },
@@ -74,4 +75,4 @@ module.exports = async function prepare(
   }
 
   return { gemFile };
-};
+}

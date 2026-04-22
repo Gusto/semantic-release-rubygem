@@ -1,13 +1,14 @@
-const path = require('path');
-const { promisify } = require('util');
-const rimrafOrig = require('rimraf');
-const ncpModule = require('ncp');
-const { readFile, writeFile, access } = require('fs').promises;
-const execa = require('execa');
-const { WritableStreamBuffer } = require('stream-buffers');
-const prepare = require('../prepare');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { promisify } from 'util';
+import ncpModule from 'ncp';
+import { readFile, writeFile } from 'fs/promises';
+import { execa } from 'execa';
+import { WritableStreamBuffer } from 'stream-buffers';
+import { rimraf } from 'rimraf';
+import prepare from '../prepare.js';
 
-const rimraf = promisify(rimrafOrig);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ncp = promisify(ncpModule.ncp);
 
 const cwd = path.resolve(__dirname, './fixtures/temp');
@@ -33,7 +34,7 @@ afterEach(async () => {
   await cleanUp();
 });
 
-const expectFileExists = file => expect(access(path.resolve(cwd, file))).resolves.toBeUndefined();
+const expectFileExists = file => expect(import('fs/promises').then(fs => fs.access(path.resolve(cwd, file)))).resolves.toBeUndefined();
 
 it('writes the new version to the version.rb file', async () => {
   await prepare({}, context, { versionFile, gemspec, gemName });

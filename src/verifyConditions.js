@@ -1,11 +1,9 @@
-// const verifyConditions = require('./src/verify');
-const util = require('util');
-const execa = require('execa');
-const path = require('path');
-const { writeFile, readFile } = require('fs').promises;
-const SemanticReleaseError = require('@semantic-release/error');
-const glob = util.promisify(require('glob'));
-const { VERSION_REGEX } = require('./common');
+import { execa } from 'execa';
+import path from 'path';
+import { writeFile, readFile } from 'fs/promises';
+import SemanticReleaseError from '@semantic-release/error';
+import { glob } from 'glob';
+import { VERSION_REGEX } from './common.js';
 
 const loadGemspec = async cwd => {
   const gemspecs = await glob('*.gemspec', { cwd });
@@ -26,7 +24,7 @@ Please follow the "[Make your own gem guide](https://guides.rubygems.org/make-yo
   try {
     const { stdout } = await execa(
       'ruby',
-      ['-e', `puts Gem::Specification.load('${gemspec}').name`],
+      ['-e', "puts Gem::Specification.load(ARGV[0]).name", gemspec],
       { cwd },
     );
     gemName = stdout;
@@ -111,7 +109,7 @@ You can retrieve an API key either from your \`~/.gem/credentials\` file or in y
  * @param {*} pluginConfig The semantic-release plugin config
  * @param {*} context The context provided by semantic-release
  */
-module.exports = async function verify(pluginConfig, { env, cwd }, { credentialsFile }) {
+export default async function verify(pluginConfig, { env, cwd }, { credentialsFile }) {
   // - Verify ruby installed?
 
   // - Locate gemspec and determine name
@@ -124,4 +122,4 @@ module.exports = async function verify(pluginConfig, { env, cwd }, { credentials
   await verifyApiKey({ env, cwd, credentialsFile });
 
   return { gemName: name, gemspec, versionFile };
-};
+}
