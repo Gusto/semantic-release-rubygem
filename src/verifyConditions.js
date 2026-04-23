@@ -20,7 +20,7 @@ Please follow the "[Make your own gem guide](https://guides.rubygems.org/make-yo
   }
 
   const [gemspec] = gemspecs;
-  let gemName = null;
+  let gemName;
   try {
     const { stdout } = await execa(
       'ruby',
@@ -28,7 +28,7 @@ Please follow the "[Make your own gem guide](https://guides.rubygems.org/make-yo
       { cwd },
     );
     gemName = stdout;
-  } catch (error) {
+  } catch (_error) {
     throw new SemanticReleaseError(
       `Error loading \`${gemspec}\``,
       'EINVALIDGEMSPEC',
