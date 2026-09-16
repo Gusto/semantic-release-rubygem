@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "@semantic-release/error": "^4.0.0",
-    "execa": "^9.6.1",
+    "execa": "^10.0.1",
     "fs-extra": "^11.3.4",
     "glob": "^13.0.6",
     "tempy": "^3.2.0"
